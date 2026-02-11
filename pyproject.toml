@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mec"
+version = "0.1.0"
+description = "Service manager and command dispatcher"
+requires-python = ">=3.10"
+dependencies = [
+    "click",
+    "fire",
+]
+
+[tool.setuptools]
+packages = ["mec"]
+
+[project.scripts]
+mec-cmd = "mec.cmd:main"
+mec-srv = "mec.srv:main"

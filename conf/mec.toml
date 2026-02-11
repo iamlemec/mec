@@ -1,0 +1,29 @@
+[jupyter]
+cmd = "jupyter-lab --ip=0.0.0.0"
+dir = "/home/doug/work"
+[jupyter.env]
+XLA_PYTHON_CLIENT_PREALLOCATE = "false"
+
+[wikigrams]
+cmd = "python wikigrams.py counts"
+dir = "/home/doug/work/nemonic/wikigrams"
+
+[fuzzy]
+cmd = "python server.py --path /home/doug/Dropbox/fuzzy --ip=0.0.0.0 --auth auth.json"
+dir = "/home/doug/work/fuzzy"
+
+[spirit]
+cmd = "npm run serve-respawn -- --conf=conf.toml --auth=auth.toml --host=0.0.0.0 --port=8700"
+dir = "/home/doug/work/spirit"
+
+[llama]
+cmd = "python -m oneping server --port=8012"
+dir = "/home/doug/work/mectools"
+
+[whisper]
+cmd = "./server -m models/ggml-large-v3-turbo-q5_0.bin --port 8123 --convert"
+dir = "/home/doug/mlai/whisper.cpp"
+
+[echo]
+cmd = "echo"
+dir = "/home/doug/work/mectools"
