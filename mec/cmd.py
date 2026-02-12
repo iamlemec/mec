@@ -6,18 +6,13 @@ import inspect
 
 from inspect import Parameter
 
-from .reg import COMMANDS
+from .reg import COMMANDS, CONFIG_DIR
 
 ##
 ## load commands
 ##
 
-# get xdg config home
-xdg_config_home = os.getenv('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
-cmd_path = os.path.join(xdg_config_home, 'mec', 'mec.py')
-
-# load commands
-with open(cmd_path) as fid:
+with (CONFIG_DIR / 'cmd.py').open() as fid:
     code = fid.read()
     exec(code)
 

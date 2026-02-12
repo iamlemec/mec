@@ -4,12 +4,6 @@ from mimetypes import guess_type
 from pydantic_ai import Agent, BinaryContent
 
 ##
-## defaults
-##
-
-C.model = 'openai:gpt-5.2'
-
-##
 ## commands
 ##
 

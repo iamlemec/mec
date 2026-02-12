@@ -17,4 +17,4 @@ packages = ["mec"]
 
 [project.scripts]
 mec-cmd = "mec.cmd:main"
-mec-srv = "mec.srv:main"
+mec-mux = "mec.mux:main"
