@@ -46,25 +46,32 @@ def do_info(unit):
         print(f'status: not running')
     print()
 
-def do_stat(unit):
+def do_status(unit):
     if is_running(unit):
         print(f'{unit}: running')
     else:
         print(f'{unit}: not running')
 
 def do_start(unit, *args):
+    # get unit status
     info = specs[unit]
     if is_running(unit):
         print(f'{unit}: already running')
         return
+
+    # check working directory
     pwd = info['dir']
     if not os.path.isdir(pwd):
         print(f'{unit}: working directory ({pwd}) does not exist')
         return
+
+    # get session command
     env = info.get('env', None)
     cmd0 = ' '.join([info['cmd'], *args])
+
+    # start session
     print(f'{unit}: starting with args = {args}')
-    server.new_session(
+    session = server.new_session(
         session_name=unit,
         start_directory=pwd,
         window_command=cmd0,
@@ -72,18 +79,45 @@ def do_start(unit, *args):
         attach=False,
     )
 
-def do_kill(unit):
+    # set up logging
+    pane = session.active_window.active_pane
+    pane.cmd('pipe-pane', f'cat >> {pwd}/{unit}.log')
+
+def do_stop(unit):
     session = get_session(unit)
     if session is None:
         print(f'{unit}: not running')
     else:
-        print(f'{unit}: killing')
+        print(f'{unit}: stopping')
         session.kill()
 
 def do_restart(unit, *args):
     if is_running(unit):
-        do_kill(unit)
+        do_stop(unit)
     do_start(unit, *args)
+
+def do_attach(unit):
+    session = get_session(unit)
+    if session is None:
+        print(f'{unit}: not running')
+        return
+    session.cmd('attach', '-r')
+
+def do_log(unit):
+    info = specs[unit]
+    pwd = info['dir']
+    if not os.path.isdir(pwd):
+        print(f'{unit}: working directory ({pwd}) does not exist')
+        return
+    os.system(f'cat {pwd}/{unit}.log')
+
+def do_tail(unit):
+    info = specs[unit]
+    pwd = info['dir']
+    if not os.path.isdir(pwd):
+        print(f'{unit}: working directory ({pwd}) does not exist')
+        return
+    os.system(f'tail -f {pwd}/{unit}.log')
 
 # interface
 class Mux:
@@ -93,45 +127,26 @@ class Mux:
     def info(self, unit=None):
         dispatch(do_info, unit)
 
-    def stat(self, unit=None):
-        dispatch(do_stat, unit)
-
     def status(self, unit=None):
-        dispatch(do_stat, unit)
+        dispatch(do_status, unit)
 
     def start(self, unit=None, *args):
         dispatch(do_start, unit, *args)
 
-    def kill(self, unit=None):
-        dispatch(do_kill, unit)
-
     def stop(self, unit=None):
-        dispatch(do_kill, unit)
+        dispatch(do_stop, unit)
 
     def restart(self, unit=None, *args):
         dispatch(do_restart, unit, *args)
 
-    def log(self, unit):
-        session = get_session(unit)
-        if session is None:
-            print(f'{unit}: not running')
-            return
-        pane = session.active_window.active_pane
-        output = pane.capture_pane(start='-')
-        print('\n'.join(output))
+    def attach(self, unit):
+        do_attach(unit)
 
-    def tail(self, unit, n=10, f=False):
-        session = get_session(unit)
-        if session is None:
-            print(f'{unit}: not running')
-            return
-        if f:
-            os.system(f'tmux attach -r -t {unit}')
-        else:
-            pane = session.active_window.active_pane
-            output = pane.capture_pane(start='-')
-            for line in output[-n:]:
-                print(line)
+    def log(self, unit):
+        do_log(unit)
+
+    def tail(self, unit):
+        do_tail(unit)
 
 def main():
     fire.Fire(Mux)
