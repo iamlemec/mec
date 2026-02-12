@@ -1,9 +1,7 @@
 # something like commandlets
 
-import os
 import fire
 import inspect
-
 from inspect import Parameter
 
 from .reg import COMMANDS, CONFIG_DIR
@@ -49,7 +47,7 @@ def validate(cmd: str, *args, **kwargs) -> bool:
     return True
 
 # dispatch command
-def dispatch(cmd, *args, **kwargs) -> str | None:
+def run(cmd, *args, **kwargs) -> str | None:
     if validate(cmd, *args, **kwargs):
         return COMMANDS[cmd](*args, **kwargs)
     return None
@@ -60,7 +58,7 @@ def dispatch(cmd, *args, **kwargs) -> str | None:
 
 # entry point
 def main() -> None:
-    fire.Fire(dispatch)
+    fire.Fire(run)
 
 # fire up the CLI
 if __name__ == '__main__':

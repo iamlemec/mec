@@ -1,7 +1,4 @@
-from mec import register, llm, Image, CONFIG as C
-
-from mimetypes import guess_type
-from pydantic_ai import Agent, BinaryContent
+from mec import register, llm, Image
 
 ##
 ## commands
