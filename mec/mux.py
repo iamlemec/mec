@@ -126,7 +126,7 @@ class Mux:
             print(f'{unit}: not running')
             return
         if f:
-            os.system(f'tmux capture-pane -t {unit} -p -S -{n} && tmux attach -t {unit}')
+            os.system(f'tmux attach -r -t {unit}')
         else:
             pane = session.active_window.active_pane
             output = pane.capture_pane(start='-')
