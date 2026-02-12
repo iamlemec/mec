@@ -1,5 +1,6 @@
 # llm tools
 
+from functools import wraps
 from inspect import signature
 from mimetypes import guess_type
 from typing import Any, Callable, Type
@@ -36,15 +37,10 @@ def convert_param(value: Any, type: Type) -> Any:
 # decorator convert image types to message parts
 def llm(func: Callable) -> Callable:
     proc = params_processor(func, convert_param)
+    @wraps(func)
     def wrapper(*args, **kwargs):
-        # get processed message parts
-        parts = proc(*args, **kwargs)
-
-        # generate llm response
+        query = proc(*args, **kwargs)
         agent = Agent(C.model)
-        result = agent.run_sync(parts)
-        response = result.output
-
-        # return response
-        return response
+        result = agent.run_sync(query)
+        return result.output
     return wrapper

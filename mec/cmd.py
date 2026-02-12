@@ -49,9 +49,10 @@ def validate(cmd: str, *args, **kwargs) -> bool:
     return True
 
 # dispatch command
-def dispatch(cmd, *args, **kwargs) -> None:
+def dispatch(cmd, *args, **kwargs) -> str | None:
     if validate(cmd, *args, **kwargs):
-        COMMANDS[cmd](*args, **kwargs)
+        return COMMANDS[cmd](*args, **kwargs)
+    return None
 
 ##
 ## main entry point
