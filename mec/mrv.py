@@ -4,12 +4,22 @@ import os
 import tomllib
 import fire
 import libtmux
+from pathlib import Path
 
 from .reg import CONFIG_DIR
 
 # get specification
 with (CONFIG_DIR / 'mrv.toml').open('rb') as fid:
     specs = tomllib.load(fid)
+
+# get XDG cache directory
+XDG_CACHE_DEFAULT = Path(os.path.expanduser('~/.cache'))
+XDG_CACHE_HOME = Path(os.getenv('XDG_CACHE_HOME', XDG_CACHE_DEFAULT))
+
+# get log dir (xdg cache)
+LOG_DIR = XDG_CACHE_HOME / 'mec'
+if not LOG_DIR.exists():
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # tmux server
 server = libtmux.Server()
@@ -60,8 +70,8 @@ def do_start(unit, *args):
         return
 
     # check working directory
-    pwd = info['dir']
-    if not os.path.isdir(pwd):
+    pwd = info.get('dir', None)
+    if pwd is not None and not os.path.isdir(pwd):
         print(f'{unit}: working directory ({pwd}) does not exist')
         return
 
@@ -81,7 +91,7 @@ def do_start(unit, *args):
 
     # set up logging
     pane = session.active_window.active_pane
-    pane.cmd('pipe-pane', f'cat >> {pwd}/{unit}.log')
+    pane.cmd('pipe-pane', f'cat >> {LOG_DIR}/{unit}.log')
 
 def do_stop(unit):
     session = get_session(unit)
@@ -104,20 +114,10 @@ def do_attach(unit):
     session.cmd('attach', '-r')
 
 def do_log(unit):
-    info = specs[unit]
-    pwd = info['dir']
-    if not os.path.isdir(pwd):
-        print(f'{unit}: working directory ({pwd}) does not exist')
-        return
-    os.system(f'cat {pwd}/{unit}.log')
+    os.system(f'cat {LOG_DIR}/{unit}.log')
 
 def do_tail(unit):
-    info = specs[unit]
-    pwd = info['dir']
-    if not os.path.isdir(pwd):
-        print(f'{unit}: working directory ({pwd}) does not exist')
-        return
-    os.system(f'tail -f {pwd}/{unit}.log')
+    os.system(f'tail -f {LOG_DIR}/{unit}.log')
 
 # interface
 class Mrv:
