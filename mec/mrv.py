@@ -8,7 +8,7 @@ import libtmux
 from .reg import CONFIG_DIR
 
 # get specification
-with (CONFIG_DIR / 'mux.toml').open('rb') as fid:
+with (CONFIG_DIR / 'mrv.toml').open('rb') as fid:
     specs = tomllib.load(fid)
 
 # tmux server
@@ -120,7 +120,7 @@ def do_tail(unit):
     os.system(f'tail -f {pwd}/{unit}.log')
 
 # interface
-class Mux:
+class Mrv:
     def list(self):
         print(', '.join(specs.keys()))
 
@@ -149,7 +149,7 @@ class Mux:
         do_tail(unit)
 
 def main():
-    fire.Fire(Mux)
+    fire.Fire(Mrv)
 
 if __name__ == '__main__':
     main()
