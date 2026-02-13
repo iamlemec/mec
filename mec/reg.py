@@ -7,6 +7,12 @@ from pathlib import Path
 from typing import Callable, Any
 
 ##
+## types
+##
+
+type Stdin = None
+
+##
 ## config directory
 ##
 

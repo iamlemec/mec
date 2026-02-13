@@ -1,4 +1,4 @@
-from mec import register, llm, Image
+from mec import register, llm, Image, Stdin
 
 ##
 ## commands
@@ -22,3 +22,11 @@ def image(
     prompt: str = 'Generate a description of this image.',
 ):
     return [ prompt, image ]
+
+@register
+def echo(
+    stdin: Stdin,
+    reps: int = 1,
+    join: str = ' ',
+):
+    return join.join([stdin] * reps)
