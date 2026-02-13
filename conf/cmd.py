@@ -1,15 +1,8 @@
 from mec import register, llm, Image, Stdin
 
-##
-## commands
-##
-
 @register
 @llm
-def diff(
-    repo: str = '.',
-    prompt: str = 'Summarize the changes in this diff in a single sentence.',
-):
+def diff(prompt: str = 'Summarize this diff in a single sentence:', repo: str = '.'):
     from git import Repo
     repo = Repo(repo)
     diff = repo.git.diff()
@@ -17,16 +10,14 @@ def diff(
 
 @register
 @llm
-def image(
-    image: Image,
-    prompt: str = 'Generate a description of this image.',
-):
+def image(image: Image, prompt: str = 'Describe this image:'):
     return [ prompt, image ]
 
 @register
-def echo(
-    stdin: Stdin,
-    reps: int = 1,
-    join: str = ' ',
-):
+@llm
+def code(code: Stdin, prompt: str = 'Explain this code:'):
+    return f'{prompt}\n\n{code}'
+
+@register
+def echo(stdin: Stdin, reps: int = 1, join: str = ' '):
     return join.join([stdin] * reps)

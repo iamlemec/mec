@@ -34,13 +34,16 @@ def convert_param(value: Any, type: Type) -> Any:
         return convert_image(value)
     return value
 
+def query(prompt: str) -> str:
+    agent = Agent(C.model)
+    result = agent.run_sync(prompt)
+    return result.output
+
 # decorator convert image types to message parts
 def llm(func: Callable) -> Callable:
     proc = params_processor(func, convert_param)
     @wraps(func)
     def wrapper(*args, **kwargs):
-        query = proc(*args, **kwargs)
-        agent = Agent(C.model)
-        result = agent.run_sync(query)
-        return result.output
+        prompt = proc(*args, **kwargs)
+        return query(prompt)
     return wrapper
