@@ -16,5 +16,5 @@ dependencies = [
 packages = ["mec"]
 
 [project.scripts]
-mec-cmd = "mec.cmd:main"
-mec-mux = "mec.mux:main"
+mec = "mec.cli:main"
+mrv = "mec.mrv:main"
